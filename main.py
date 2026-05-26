@@ -120,7 +120,12 @@ def handle_request(input_data, config):
             entry["hit_count"] = entry.get("hit_count", 0) + 1
             # (Optional: write back updated hit_count asynchronously if desired)
             
-            return entry.get("output")
+            return {
+                "output": entry.get("output"),
+                "cache_hit": True,
+                "confidence": entry.get("confidence"),
+                "ttl": remaining_ttl
+            }
 
     # BLOCK 2 — RUN INFERENCE
     output, raw_scores = model.infer(input_data)
@@ -153,7 +158,19 @@ def handle_request(input_data, config):
             "original_TTL": ttl
         }
         r.set(key, json.dumps(new_entry), ex=ttl)
+        
+        return {
+            "output": output,
+            "cache_hit": False,
+            "confidence": confidence,
+            "ttl": ttl
+        }
 
     # Below cache_threshold — serve without storing.
     # Next identical request will re-run inference.
-    return output
+    return {
+        "output": output,
+        "cache_hit": False,
+        "confidence": confidence,
+        "ttl": 0
+    }

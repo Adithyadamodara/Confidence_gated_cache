@@ -15,12 +15,12 @@ def run_test():
     print("--- 1. First Request (Cache Miss) ---")
     start = time.time()
     response = handle_request(prompt, config)
-    print(f"Time: {time.time() - start:.2f}s | Response: {response}")
+    print(f"Time: {time.time() - start:.2f}s | Response: {response['output']}")
     
     print("\n--- 2. Second Request (Cache Hit) ---")
     start = time.time()
     response2 = handle_request(prompt, config)
-    print(f"Time: {time.time() - start:.2f}s | Response: {response2}")
+    print(f"Time: {time.time() - start:.2f}s | Response: {response2['output']}")
     
     print("\n--- 3. Let's wait for TTL to drop to simulate background refresh ---")
     # You can configure the lambda/thresholds in main.py to make the TTL very short for testing.
